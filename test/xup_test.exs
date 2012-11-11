@@ -15,14 +15,14 @@ defsupervisor TestSup, strategy: :one_for_one do
   defsupervisor TestAnotherSup do
     defp children do
      [
-       worker(id: TestSrv),
+       worker(TestSrv),
      ]
     end
   end
 
   defp children do
     [
-     worker(id: TestSrv),
+     worker(id: TestSrv, restart: :transient),
      supervisor(TestAnotherSup)
     ]
   end

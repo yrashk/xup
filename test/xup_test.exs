@@ -12,13 +12,7 @@ end
 
 defsupervisor TestSup, strategy: :one_for_one do
 
-  defsupervisor TestAnotherSup do
-    defp children do
-     [
-       worker(TestSrv),
-     ]
-    end
-  end
+  defsupervisor TestAnotherSup, children: [worker(TestSrv)]
 
   defp children do
     [

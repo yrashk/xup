@@ -48,7 +48,7 @@ defmodule Xup do
       end
 
       defp children(_), do: children
-      defp children, do: []
+      defp children, do: unquote(options[:children])
       defoverridable children: 0, children: 1
 
       import Xup

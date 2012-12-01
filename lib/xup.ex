@@ -102,7 +102,7 @@ defmodule Xup do
     quote do
       @children unquote(:erlang.phash2(block))
       defp child(unquote(:erlang.phash2(block)), unquote(argument)) do
-        unquote(block)
+        Xup.Worker.new(unquote(block))
       end
     end
   end
@@ -111,7 +111,7 @@ defmodule Xup do
     quote do
       defp children(arg) do
         lc c inlist @children do
-          Xup.Worker.new(apply(function(child/2), [c, arg])).to_spec
+          child(c, arg).to_spec
         end
       end
     end

@@ -102,7 +102,10 @@ defmodule Xup do
     quote do
       @children unquote(:erlang.phash2(block))
       defp child(unquote(:erlang.phash2(block)), unquote(argument)) do
-        Xup.Worker.new(unquote(block))
+        case unquote(block) do
+          nil -> nil
+          v -> Xup.Worker.new(v).to_spec
+        end
       end
     end
   end
@@ -110,9 +113,9 @@ defmodule Xup do
   defmacro __before_compile__(_) do
     quote do
       defp children(arg) do
-        lc c inlist @children do
-          child(c, arg).to_spec
-        end
+        Enum.filter(lc c inlist @children do
+                      child(c, arg)
+                    end, fn(c) -> not nil?(c) end)
       end
     end
   end

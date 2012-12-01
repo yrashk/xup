@@ -24,6 +24,12 @@ defsupervisor TestSup, strategy: :one_for_one do
   worker(arg) do
     [id: SomeSrv, start_func: {TestSrv, :start_link, [arg]}]
   end
+  worker(arg) do
+    case arg do
+      true  -> [id: SomeSrv, start_func: {TestSrv, :start_link, [arg]}]
+      _ -> nil
+    end
+  end
 
 end
 

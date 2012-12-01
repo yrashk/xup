@@ -8,18 +8,23 @@ defmodule TestSrv do
   def start_link do
     :gen_server.start_link __MODULE__, nil, []
   end
+
+  def start_link(_) do
+    :gen_server.start_link __MODULE__, nil, []
+  end
+
 end
 
 defsupervisor TestSup, strategy: :one_for_one do
 
-  defsupervisor TestAnotherSup, children: [worker(TestSrv)]
-
-  defp children do
-    [
-     worker(id: TestSrv, restart: :transient),
-     supervisor(TestAnotherSup)
-    ]
+  worker id: TestSrv, restart: :transient
+  supervisor TestAnotherSup do
+    worker id: TestSrv
   end
+  worker(arg) do
+    [id: SomeSrv, start_func: {TestSrv, :start_link, [arg]}]
+  end
+
 end
 
 defmodule XupWorkerTest do

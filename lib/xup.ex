@@ -47,11 +47,12 @@ defmodule Xup do
                 unquote(max_r), unquote(max_t)}, children(arg)}}
       end
 
-      defp children(_), do: children
-      defp children, do: unquote(options[:children])
-      defoverridable children: 0, children: 1
-
       import Xup
+
+      Module.register_attribute __MODULE__, :children, persist: false, accumulate: true
+
+      @before_compile Xup
+
     end
   end
 
@@ -74,14 +75,46 @@ defmodule Xup do
     end
   end
 
-  def worker(options) when is_list(options) do
-    Xup.Worker.new(options).to_spec
+  defmacro supervisor(name, opts) do
+    __supervisor__(name, opts)
   end
-  def worker(mod, options // []) when is_atom(mod) do
-    worker(Keyword.merge(options, id: mod))
+
+  defmacro supervisor(name, opts, [do: block]) do
+    __supervisor__(name, Keyword.merge(opts, [do: block]))
   end
-  def supervisor(mod, options // []) when is_atom(mod) do
-    worker(Keyword.merge(options, id: mod, type: :supervisor))
+
+  defp __supervisor__(name, opts) do
+    quote do
+      defsupervisor unquote(name), unquote(opts)
+      worker id: unquote(name)
+    end
+  end
+
+  defmacro worker(config) do
+    __worker__({:_arg, 0, :quoted}, [do: config])
+  end
+
+  defmacro worker(argument, [do: block]) do
+    __worker__(argument, [do: block])
+  end
+
+  defp __worker__(argument, [do: block]) do
+    quote do
+      @children unquote(:erlang.phash2(block))
+      defp child(unquote(:erlang.phash2(block)), unquote(argument)) do
+        unquote(block)
+      end
+    end
+  end
+  
+  defmacro __before_compile__(_) do
+    quote do
+      defp children(arg) do
+        lc c inlist @children do
+          Xup.Worker.new(apply(function(child/2), [c, arg])).to_spec
+        end
+      end
+    end
   end
   
 end

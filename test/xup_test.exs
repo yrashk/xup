@@ -19,7 +19,7 @@ defsupervisor TestSup, strategy: :one_for_one do
 
   worker id: TestSrv, restart: :transient
   supervisor TestAnotherSup do
-    worker id: TestSrv
+    worker do: [id: TestSrv]
   end
   worker(arg) do
     [id: SomeSrv, start_func: {TestSrv, :start_link, [arg]}]

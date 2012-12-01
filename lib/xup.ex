@@ -90,6 +90,10 @@ defmodule Xup do
     end
   end
 
+  defmacro worker([do: block]) do
+    __worker__({:_arg, 0, :quoted}, [do: block])
+  end
+
   defmacro worker(config) do
     __worker__({:_arg, 0, :quoted}, [do: config])
   end

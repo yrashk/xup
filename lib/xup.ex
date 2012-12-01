@@ -86,7 +86,7 @@ defmodule Xup do
   defp __supervisor__(name, opts) do
     quote do
       defsupervisor unquote(name), unquote(opts)
-      worker id: unquote(name)
+      worker id: unquote(name), type: :supervisor
     end
   end
 

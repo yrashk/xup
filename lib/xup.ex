@@ -6,10 +6,10 @@ defrecord Xup.Worker, id: nil, start_func: nil, restart: :permanent, shutdown: 5
     if is_atom(options[:id]) and nil?(options[:start_func]) do
       options = Keyword.put(options, :start_func, {options[:id], :start_link, []})
     end
-    if is_atom(options[:id]) and nil?(options[:modules]) do
-      options = Keyword.put(options, :modules, [options[:id]])
-    end
-    if nil?(options[:modules]) do
+    if not nil?(options[:start_func]) and nil?(options[:modules]) do
+      {module, _, _} = options[:start_func]
+      options = Keyword.put(options, :modules, [module])
+    else 
       options = Keyword.put(options, :modules, :dynamic)
     end
     super(options)

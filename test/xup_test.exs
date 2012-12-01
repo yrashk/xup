@@ -40,10 +40,15 @@ defmodule XupWorkerTest do
     assert Xup.Worker.new(id: Name).modules == [Name]
     assert Xup.Worker.new(id: Name, modules: :dynamic).modules == :dynamic
     assert Xup.Worker.new(id: 1).modules == :dynamic
+    assert Xup.Worker.new(id: SomeSrv, start_func: {TestSrv, :start_link, []}).modules == [TestSrv]
   end
 
   test "actual start" do
-    TestSup.start_link
+    {:ok, pid} = TestSup.start_link
+    assert [c1,c2,c3] = :supervisor.which_children(pid)
+    assert {TestSrv, _, :worker, [TestSrv]} = c1
+    assert {TestSup.TestAnotherSup, _, :supervisor, [TestSup.TestAnotherSup]} = c2
+    assert {SomeSrv, _, :worker, [TestSrv]} = c3
   end
 
 end

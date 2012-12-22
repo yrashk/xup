@@ -42,6 +42,12 @@ defmodule XupWorkerTest do
     assert Xup.Worker.new(id: 1).start_func == nil
   end
 
+  test "start_func interpolation" do
+    assert Xup.Worker.new(module: Name).start_func == {Name, :start_link, []}
+    assert Xup.Worker.new(id: Name, function: :start_link_1).start_func == {Name, :start_link_1, []}
+    assert Xup.Worker.new(id: Name, args: [1]).start_func == {Name, :start_link, [1]}
+  end
+
   test "modules guessing" do
     assert Xup.Worker.new(id: Name).modules == [Name]
     assert Xup.Worker.new(id: Name, modules: :dynamic).modules == :dynamic

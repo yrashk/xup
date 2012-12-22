@@ -12,6 +12,18 @@ defrecord Xup.Worker, id: nil, start_func: nil, restart: :permanent, shutdown: 5
     else
       options = Keyword.put(options, :modules, :dynamic)
     end
+    if not nil?(options[:module]) do
+      {_, function, args} = options[:start_func]
+      options = Keyword.put(options, :start_func, {options[:module], function, args})
+    end
+    if not nil?(options[:function]) do
+      {module, _, args} = options[:start_func]
+      options = Keyword.put(options, :start_func, {module, options[:function], args})
+    end
+    if not nil?(options[:args]) do
+      {module, function, _} = options[:start_func]
+      options = Keyword.put(options, :start_func, {module, function, options[:args]})
+    end
     super(options)
   end
   def to_spec(r) do

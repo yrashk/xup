@@ -9,7 +9,7 @@ defrecord Xup.Worker, id: nil, start_func: nil, restart: :permanent, shutdown: 5
     if not nil?(options[:start_func]) and nil?(options[:modules]) do
       {module, _, _} = options[:start_func]
       options = Keyword.put(options, :modules, [module])
-    else 
+    else
       options = Keyword.put(options, :modules, :dynamic)
     end
     super(options)
@@ -113,7 +113,7 @@ defmodule Xup do
       end
     end
   end
-  
+
   defmacro __before_compile__(_) do
     quote do
       defp children(arg) do
@@ -123,5 +123,5 @@ defmodule Xup do
       end
     end
   end
-  
+
 end

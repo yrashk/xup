@@ -103,11 +103,11 @@ defmodule Xup do
   end
 
   defmacro worker([do: block]) do
-    __worker__({:_arg, 0, :quoted}, [do: block])
+    __worker__(quote(do: _arg), [do: block])
   end
 
   defmacro worker(config) do
-    __worker__({:_arg, 0, :quoted}, [do: config])
+    __worker__(quote(do: _arg), [do: config])
   end
 
   defmacro worker(argument, [do: block]) do

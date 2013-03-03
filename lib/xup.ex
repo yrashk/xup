@@ -129,7 +129,7 @@ defmodule Xup do
   defmacro __before_compile__(_) do
     quote do
       defp children(arg) do
-        Enum.filter(lc c inlist @children do
+        Enum.filter(lc c inlist Enum.reverse(@children) do
                       child(c, arg)
                     end, fn(c) -> not nil?(c) end)
       end
